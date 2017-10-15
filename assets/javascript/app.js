@@ -1,33 +1,39 @@
-var btnCounter = 0;
-var tempStorage = [];
+
+var topics = [];
+var clearButtonContainer = function() {
+	$("#myBtnContainer").empty();
+}
+var clearGifContainer = function() {
+	$("#myGiphyContainer").empty();
+}
 
 $(document).on("click","#mySubmit", function(event){
 	event.preventDefault();
-	var tempSearchValue = $("#mySearch").val().trim();
 	
-	if (tempStorage.indexOf(tempSearchValue) === -1) {	
-		tempStorage.push(tempSearchValue);
-		var tempBtn = $("<button>");
-		tempBtn.attr({
-			class: "btn",
-			id: "myBtn-" + btnCounter
-		});
-		if(btnCounter % 2 === 0){
-			tempBtn.addClass("btn-secondary");
-		} else {
-			tempBtn.addClass("btn-default");
+	var tempSearchValue = $("#mySearch").val().trim();
+	if (topics.indexOf(tempSearchValue) === -1) {	
+		clearButtonContainer();
+		topics.push(tempSearchValue);
+		var btnCounter = 0;
+		for(var i = 0; i < topics.length; i++) {
+			var tempBtn = $("<button>");
+			tempBtn.attr({
+				class: "btn",
+				id: "myBtn-" + btnCounter
+			});
+			if(btnCounter % 2 === 0){
+				tempBtn.addClass("btn-secondary");
+			} else {
+				tempBtn.addClass("btn-default");
+			}
+			tempBtn.attr("data-btnValue",topics[i]);
+			tempBtn.attr("data-value",btnCounter);
+			tempBtn.text(topics[i]);
+			$("#myBtnContainer").append(tempBtn);
+			btnCounter++
 		}
-		tempBtn.attr("data-btnValue",tempSearchValue);
-		tempBtn.attr("data-value",btnCounter);
-		tempBtn.text(tempSearchValue);
-		$("#myBtnContainer").append(tempBtn);
-		btnCounter++;	
 	}
 });
-
-function clearGifContainer() {
-	$("#myGiphyContainer").empty();
-}
 
 
 $(document).on("click","button[id*='myBtn-']",function(event){
@@ -38,14 +44,15 @@ $(document).on("click","button[id*='myBtn-']",function(event){
 	var giphyURL = "https://api.giphy.com/v1/gifs/";
 	var queryType = "search";
 	var tempSearch = "&q=" + $(this).attr("data-btnValue");
-	var maxNumResults = "&limit=" + 25;
+	var maxNumResults = "&limit=" + 10;
 	var myRatings = "&rating=" + "g" + "&rating=" + "pg";
-	var queryURL = giphyURL + queryType + apiKey + tempSearch + maxNumResults + myRatings;
+	// offset to select a position to start from ie. 0 to 90 to allot for a min of 10 results, see maxNumResults variable
+	var myOffset = "&offset=" + Math.floor(Math.random()*90);
+	var queryURL = giphyURL + queryType + apiKey + tempSearch + maxNumResults + myRatings + myOffset;
 	$.ajax({
 		url:queryURL,
 		method:"GET"
 	}).done(function(response){
-		console.log(response.data.length);
 		for(var i = 0; i < response.data.length; i++) {
 			var tempRatings = response.data[i].rating;
 			var tempImgStill = response.data[i].images.fixed_width_still.url;
@@ -53,8 +60,8 @@ $(document).on("click","button[id*='myBtn-']",function(event){
 			var tempNarrative = response.data[i].title;	
 			var tempDivCard = $("<div>");
 			tempDivCard.attr({
-				class: "card float-left",
-				style: "width:20em;"
+				class: "card float-left center-block",
+				style: "width:25em; height:600px"
 			});
 			var tempDivCardImg = $("<img>");
 			tempDivCardImg.attr({
@@ -62,12 +69,9 @@ $(document).on("click","button[id*='myBtn-']",function(event){
 				id: "myGif-" + i,
 				src: tempImgStill
 			});
-			// tempDivCardImg.attr("class","card-img-top");
-			// tempDivCardImg.attr("id","myGif-" + i);
 			tempDivCardImg.attr("data-still", tempImgStill);
 			tempDivCardImg.attr("data-animate", tempImgGif);
 			tempDivCardImg.attr("data-status","still");
-			// tempDivCardImg.attr("src",tempImgStill);
 			var tempDivCardBody = $("<div>");
 			tempDivCardBody.attr("class","card-body");
 			var tempHFour = $("<h6>");
