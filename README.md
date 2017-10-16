@@ -1,8 +1,7 @@
 # Giphy_Gallery
 
 ##Problems / Confusion
->1. Problems understanding the purpose of e.preventDefault()
->2. Need to learn how to use Bootstrap version 4.0 to center block-level elements
+>1. Need to learn how to use Bootstrap version 4.0 to center block-level elements
 
 ##Additional Functionality / Designs for use in future personal portfolio
 >1. (Simple) Add user selected GIF quantity by means of a dropdown or number spinner
