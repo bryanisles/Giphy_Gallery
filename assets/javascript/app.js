@@ -1,5 +1,6 @@
 
-var topics = [];
+var topics = ["dog", "cat", "bird", "crow", "lion", "tiger", "liger", "leopard", "penguin","black bear", "polar bear"];
+
 var clearButtonContainer = function() {
 	$("#myBtnContainer").empty();
 }
@@ -7,13 +8,7 @@ var clearGifContainer = function() {
 	$("#myGiphyContainer").empty();
 }
 
-$(document).on("click","#mySubmit", function(event){
-	event.preventDefault();
-	
-	var tempSearchValue = $("#mySearch").val().trim();
-	if (topics.indexOf(tempSearchValue) === -1) {	
-		clearButtonContainer();
-		topics.push(tempSearchValue);
+var reinitialize = function() {
 		var btnCounter = 0;
 		for(var i = 0; i < topics.length; i++) {
 			var tempBtn = $("<button>");
@@ -30,25 +25,34 @@ $(document).on("click","#mySubmit", function(event){
 			tempBtn.attr("data-value",btnCounter);
 			tempBtn.text(topics[i]);
 			$("#myBtnContainer").append(tempBtn);
-			btnCounter++
+			btnCounter++;
 		}
+} 
+
+$(document).on("click","#mySubmit", function(event){
+	event.preventDefault();
+	
+	var tempSearchValue = $("#mySearch").val().trim();
+	if (topics.indexOf(tempSearchValue) === -1) {	
+		clearButtonContainer();
+		topics.push(tempSearchValue);
+		reinitialize();
 	}
 });
 
-
 $(document).on("click","button[id*='myBtn-']",function(event){
-	event.preventDefault();
 	clearGifContainer();
 	var tempQueryValue = $(this).attr("data-value");
 	var apiKey = "?api_key=" + "2m4rWNVpTqAABADj01J4SoyUB8USPBjM";
-	var giphyURL = "https://api.giphy.com/v1/gifs/";
-	var queryType = "search";
+	var giphyURL = "https://api.giphy.com/";
+	var queryType = "v1/gifs/search";
 	var tempSearch = "&q=" + $(this).attr("data-btnValue");
 	var maxNumResults = "&limit=" + 10;
 	var myRatings = "&rating=" + "g" + "&rating=" + "pg";
 	// offset to select a position to start from ie. 0 to 90 to allot for a min of 10 results, see maxNumResults variable
 	var myOffset = "&offset=" + Math.floor(Math.random()*90);
 	var queryURL = giphyURL + queryType + apiKey + tempSearch + maxNumResults + myRatings + myOffset;
+	console.log(queryURL);
 	$.ajax({
 		url:queryURL,
 		method:"GET"
@@ -98,4 +102,6 @@ $(document).on("click","img[id*='myGif-']",function(event){
 		$(this).attr("src",$(this).attr("data-still"));
 		$(this).attr("data-status","still");
 	}
-})
+});
+
+reinitialize();
